@@ -1,5 +1,5 @@
-title: Slate theme
-description: Slate is a theme for GitHub Pages.
-show_downloads: true
+title: 志斌的博客
+description: 工作中的點點滴滴.
+show_downloads: false
 google_analytics:
 theme: jekyll-theme-slate
