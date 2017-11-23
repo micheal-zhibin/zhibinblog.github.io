@@ -13,7 +13,7 @@ There should be whitespace between paragraphs. We recommend including a README, 
 # [](#header-1)canvas总结
 
 工作中经常和canvas打交道，踩过的一些坑，在这里总结让别人也能不踩这个坑
-[Link to another page](canvas).
+[canvas总结](canvas).
 
 ## [](#header-2)Header 2
 
