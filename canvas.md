@@ -19,21 +19,76 @@ var context = canvas.getContext("2d");
 
 ### [](#header-5)一些简单的绘图操作
 ```js
+//字体操作：
 //设置粗细大小字体
 context.font = "500 " + 26.8 + "px 方正兰亭圆简体";
-//设置字体填充颜色
+//设置填充颜色
 context.fillStyle = "#" + text_color;
 //设置字体对齐方式
 context.textAlign="center";
 //从坐标点(313,67)开始绘制文字
-context.fillText("JD服务号掐指一算", 313, 67) 
+context.fillText("JD服务号掐指一算", 313, 67)
+
+//直线：
+//调整笔触颜色
+context.strokeStyle = '#fff'
+//直线起点
+cxt.moveTo(10,10);
+//直线的另一端点（下一根直线的起点）
+cxt.lineTo(150,50);
+//与最后的端点进行连接成直线
+cxt.lineTo(10,50);
+
+//矩形
+//绘制矩形，（0,0）左上角端点，（200,200）右下角端点
+cxt.fillRect(0,0,200,200);
+
+//圆
+//开始路径描绘
+cxt.beginPath();
+//绘制圆形，圆心（70,18）半径为15，从0->2pai，顺时针
+cxt.arc(70,18,15,0,Math.PI*2,true);
+//结束路径绘制
+cxt.closePath();
+//填充
+cxt.fill();
+
+//曲线
+//路径指定
+context.beginPath();
+//单独使用arcTo()方法必须指定绘图开始的基点
+ 
+context.moveTo(20,20);
+ 
+//创建两切线之间的弧/曲线
+context.arcTo(200,150,20,280,50);
+//起始端点(20,20)、端点1(290,150)、端点2(20,280)三点组成的夹角相切并且半径为50的圆弧，并且只保留两切点之间圆弧部分以及起始端点到第一个切点之间部分
+
+//渐变
+//创建线性渐变，开始于（0,0）结束语（175,50）
+var grd=cxt.createLinearGradient(0,0,175,50);
+//设置初始颜色
+grd.addColorStop(0,"#FF0000");
+//设置结束颜色
+grd.addColorStop(1,"#00FF00");
+//赋值到填充方式去使用
+cxt.fillStyle=grd;
+
+//图像
+//创建image对象
+var img=new Image();
+//把图片的链接赋值，注意一定要是同源的！！！
+img.src="1.png";
+//在onload事件中展示图片确保图片已经加载成功
+img.onload=function(e){
+    cxt.drawImage(img,0,0);
+}
+
 //把后面绘图的操作进行矩阵转换
 context.transform(1,Math.tan(11*Math.PI/180),0,1,0,0);
 //在（10,159）插入尺寸为587x873的mainimg（Image对象）
 context.drawImage(mainimg, 10*radio, 159*radio, 587*radio, 873*radio)
-获取图片时候要把画图这个操作放在Image对象的load事件里面去，不然会出现图片还没加载完就绘制导致canvas里面相应位置的图片丢失的结果。
-//调整笔触颜色
-context.strokeStyle = '#fff'
+//获取图片时候要把画图这个操作放在Image对象的load事件里面去，不然会出现图片还没加载完就绘制导致canvas里面相应位置的图片丢失的结果。
 //绘制一个从0-2pi，圆心在（215，305）半径为45的圆
 context.arc(215, 305, 45, 0, 2 * Math.PI);
 ```
@@ -151,5 +206,106 @@ ctx.drawImage(img, 191 * radio, 230 * radio, d * radio, d * radio);
 //恢复绘图并把头像加入
 ctx.restore();
 }
+```
+
+### [](#header-5)时钟模拟
+```html
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" >
+<title>canvas基础练习</title>
+<style>
+    .myCanvas{
+        border:1px solid #f00;
+    }
+</style>
+ 
+<script>
+    var canvasWidth = 300;
+    var canvasHeight = 300;
+    //获取canvas的宽和高存放于全局变量备用，并返回canvas的context对象
+    function getContextById(elementId){
+        var canvas = document.getElementById(elementId);
+        canvasWidth = canvas.width;
+        canvasHeight = canvas.height;
+        var context = canvas.getContext("2d");
+        return context;
+    }
+ 
+    function drawText(h, m, s){
+        var context = getContextById("myCanvas");
+        //清除画布
+        context.clearRect(0,0,canvasWidth,canvasHeight);
+ 
+        //开始路径 
+        context.beginPath(); 
+        //绘制外圆 
+        context.arc(100,100,99,0,2*Math.PI,false); 
+        //绘制内圆 
+        //context.moveTo(194,100);//将绘图游标移动到（x,y），不画线 
+        context.arc(100,100,96,0,2*Math.PI,false);
+        //绘制分针 
+        context.fillStyle="rgba(0,255,255,0.5)";
+        context.moveTo(100,100); 
+        context.lineTo(100 + 85 * Math.sin(s * Math.PI / 30),100 - 85 * Math.cos(s * Math.PI / 30));
+        //绘制分针 
+        context.fillStyle="rgba(255,0,255,0.5)";
+        context.moveTo(100,100); 
+        context.lineTo(100 + 75 * Math.sin(m * Math.PI / 30 + s * Math.PI / 1080),100 - 75 * Math.cos(m * Math.PI / 30 + s * Math.PI / 1080));
+        //绘制时针 
+        context.fillStyle="rgba(0,0,0,0.5)";
+        context.moveTo(100,100); 
+        context.lineTo(100 + 65 * Math.sin(h * Math.PI / 6 + m * Math.PI / 360),100 - 65 * Math.cos(h * Math.PI / 6 + m * Math.PI / 360));
+        //最后必须调用stroke()方法，这样才能把图像绘制到画布上。
+        context.fillStyle="rgba(0,0,255,0.5)";
+        context.stroke();
+ 
+        //绘制文本
+        context.font="bold 14px Arial"; 
+        context.textAlign="center"; 
+        context.textBaseline="middle";//文本的基线
+        for(var i=1;i<=12;i++){
+            context.fillText(i,100 + 85 * Math.sin(i * Math.PI / 6),100 - 85 * Math.cos(i * Math.PI / 6));
+        }
+        for(var i=0;i<60;i++){
+            if(i % 5 == 0) {
+                context.moveTo(100 + 91 * Math.sin(i * Math.PI / 30),100 - 91 * Math.cos(i * Math.PI / 30)); 
+                context.lineTo(100 + 96 * Math.sin(i * Math.PI / 30),100 - 96 * Math.cos(i * Math.PI / 30)); 
+                continue;
+            }
+            context.moveTo(100 + 93 * Math.sin(i * Math.PI / 30),100 - 93 * Math.cos(i * Math.PI / 30)); 
+            context.lineTo(100 + 96 * Math.sin(i * Math.PI / 30),100 - 96 * Math.cos(i * Math.PI / 30));
+        }
+        context.strokeStyle="rgba(0,0,255,0.5)"; 
+        //最后必须调用stroke()方法，这样才能把图像绘制到画布上。
+        context.stroke();
+    }
+
+    window.onload = function() {
+        setInterval(function() {
+            var now = new Date();
+            var hour = now.getHours(),
+                minute = now.getMinutes();
+                second = now.getSeconds();
+
+            hour = hour >= 12 ? hour - 12 : hour;
+            drawText(hour, minute, second);
+        }, 1000)
+    }
+ 
+</script>
+</head>
+ 
+<body>
+    <canvas width="200" height="200" class="myCanvas" id="myCanvas">
+            你的浏览器不支持canvas。
+    </canvas>
+    <p>
+    </p>
+</body>
+ 
+</html>
 ```
 [back](./)
